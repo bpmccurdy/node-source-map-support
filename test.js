@@ -247,6 +247,7 @@ it('function constructor', function() {
     'SyntaxError: Unexpected token )',
     /^    at Object\.exports\.test \((?:.*\/)?line1\.js:1001:101\)$/,
   ];
+  // Before node v6.0.0 an extra line was printed
   if (process.version.match(/^v[0-5]\./)) {
     expected = [
       'SyntaxError: Unexpected token )',
