@@ -237,19 +237,27 @@ it('native function', function() {
     '[1].map(function(x) { throw new Error(x); });'
   ], [
     'Error: 1',
-    /\/.original\.js/,
+    /\.original\.js/,
     /at Array\.map \(native\)/
   ]);
 });
 
 it('function constructor', function() {
+  var expected = [
+    'SyntaxError: Unexpected token )',
+    /^    at Object\.exports\.test \((?:.*\/)?line1\.js:1001:101\)$/,
+  ];
+  if (process.version.match(/^v[0-5]\./)) {
+    expected = [
+      'SyntaxError: Unexpected token )',
+      /^    at (?:Object\.)?Function \((?:unknown source|<anonymous>|native)\)$/,
+      /^    at Object\.exports\.test \((?:.*\/)?line1\.js:1001:101\)$/,
+    ]
+  }
+
   compareStackTrace(createMultiLineSourceMap(), [
     'throw new Function(")");'
-  ], [
-    'SyntaxError: Unexpected token )',
-    /^    at (?:Object\.)?Function \((?:unknown source|<anonymous>|native)\)$/,
-    /^    at Object\.exports\.test \((?:.*\/)?line1\.js:1001:101\)$/,
-  ]);
+  ], expected);
 });
 
 it('throw with empty source map', function() {

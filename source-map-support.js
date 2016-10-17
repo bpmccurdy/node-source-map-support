@@ -317,6 +317,16 @@ function wrapCallSite(frame) {
   if (source) {
     var line = frame.getLineNumber();
     var column = frame.getColumnNumber() - 1;
+    
+    try {
+      var type = frame.getTypeName();
+    } catch (e) {
+      var type = null
+    }
+
+    if (type == "[object Object]") {
+       type = "null"
+    }
 
     // Fix position in Node where some (internal) code is prepended.
     // See https://github.com/evanw/node-source-map-support/issues/36
@@ -330,6 +340,7 @@ function wrapCallSite(frame) {
       column: column
     });
     frame = cloneCallSite(frame);
+    frame.getTypeName = function() { return type };
     frame.getFileName = function() { return position.source; };
     frame.getLineNumber = function() { return position.line; };
     frame.getColumnNumber = function() { return position.column + 1; };
